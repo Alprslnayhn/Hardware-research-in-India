@@ -1,0 +1,7 @@
+v 4
+file . "tb_logic_gates.vhd" "10ed7a261c42771ea37e4ab13a52d5424dbfe835" "20260716055012.934":
+  entity tb_logic_gates at 1( 0) + 0 on 13;
+  architecture behavior of tb_logic_gates at 8( 118) + 0 on 14;
+file . "logic_gates.vhd" "02dae928deb776f2e6ee3b23e180a754e2037cfe" "20260716055012.919":
+  entity logic_gates at 1( 0) + 0 on 11;
+  architecture behavioral of logic_gates at 17( 357) + 0 on 12;

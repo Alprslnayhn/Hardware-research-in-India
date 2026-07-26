@@ -1,0 +1,7 @@
+v 4
+file . "tasarim_tb.vhd" "6cb5a16c865988739e8a45dd3c349dec22259ad4" "20260716032241.439":
+  entity and_kapi_tb at 2( 18) + 0 on 13;
+  architecture test_ortami of and_kapi_tb at 9( 179) + 0 on 14;
+file . "tasarim.vhd" "33591c0e1550c6759c8bfba258fd03f56ad76725" "20260716032241.438":
+  entity and_kapi at 2( 15) + 0 on 11;
+  architecture donanim of and_kapi at 15( 366) + 0 on 12;

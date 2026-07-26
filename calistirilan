@@ -1,0 +1,190 @@
+ 659  sudo update-grub
+  660  sudo systemctl restart grub-btrfsd
+  661  sudo systemctl status grub-btrfsd
+  662  sudo snapper list
+  663  sudo nano /boot/grub/grub-btrfs.cfg
+  664  history
+  665  sudo update-grub
+  666  magic --version
+  667  xschem --version
+  668  make --version
+  669  git --version
+  670  ls -l /usr/local/share/pdk
+  671  ls -ld ~/skywater-pdk
+  672  ls -ld ~/open_pdks
+  673  ls -ld ~/inverter
+  674  rm -rf skywater-pdk/
+  675  rm -rf open_pdks/
+  676  sudo apt-get update
+  677  sudo apt-get install git
+  678  sudo apt install python3-pip python3-yaml -y
+  679  export PATH="$HOME/.local/bin:$PATH"
+  680  cd Desktop/
+  681  mkdir -p chip_design
+  682  cd chip_design/
+  683  sudo apt-get install build-essential clang bison flex -y
+  684  sudo apt-get install libreadline-dev gawk tcl-dev libffi-dev -y
+  685  sudo apt-get install git graphviz xdot pkg-config python3 -y
+  686  libboost-system-dev libboost-python-dev libboost-filesystem-dev zlib1g-dev make m4 -y
+  687  sudo apt-get install libboost-system-dev libboost-python-dev libboost-filesystem-dev zlib1g-dev make m4 -y
+  688  sudo apt-get install tcsh csh libx11-dev gperf tcl8.6-dev tk8.6-dev -y
+  689  sudo apt-get install tk8.6-dev libx11-dev libxpm-dev libxcb1-dev libxrender-dev libcairo2-dev -y
+  690  sudo apt-get install libxaw7-dev freeglut3-dev automake yosys -y
+  691  sudo apt-get update
+  692  sudo apt-get -y install libtool
+  693  sudo apt-get install build-essential clang bison flex -y
+  694  sudo apt-get install libreadline-dev gawk tcl-dev libffi-dev -y
+  695  sudo apt-get install git graphviz xdot pkg-config python3 -y
+  696  sudo apt-get install libboost-system-dev libboost-python-dev libboost-filesystem-dev zlib1g-dev make m4 -y
+  697  sudo apt-get install tcsh csh libx11-dev gperf tcl8.6-dev tk8.6-dev -y
+  698  sudo apt-get install tk8.6-dev libx11-dev libxpm-dev libxcb1-dev libxrender-dev libcairo2-dev -y
+  699  sudo apt-get install libxaw7-dev freeglut3-dev automake yosys -y
+  700  sudo apt-get update
+  701  sudo apt-get -y install libtool
+  702  2. Xschem Kurulumu
+  703  Bash
+  704  git clone https://github.com/StefanSchippers/xschem.git xschem
+  705  cd xschem/
+  706  ./configure
+  707  make
+  708  sudo make install
+  709  xschem
+  710  cd ..
+  711  3. Magic Kurulumu
+  712  Bash
+  713  git clone git://opencircuitdesign.com/magic
+  714  cd magic
+  715  ./configure
+  716  make
+  717  sudo make install
+  718  magic
+  719  history
+  720  git clone https://git.code.sf.net/p/ngspice/ngspice_git
+  721  cd ngspice_git/
+  722  mkdir release
+  723  cd release
+  724  ../autogen.sh
+  725  ../configure --with-x --enable-xspice --disable-debug --enable-cider --with-readline=yes --enable-openmp --enable-adms
+  726  make
+  727  sudo make install
+  728  cd ../..
+  729  # 1. Doğru adresten ngspice'ı indirin
+  730  git clone https://git.code.sf.net/p/ngspice/ngspice
+  731  # 2. İndirilen klasörün içine girin (Klasör adı artık sadece ngspice)
+  732  cd ngspice/
+  733  # 3. Derleme için release klasörünü oluşturup içine girin
+  734  mkdir release
+  735  cd release
+  736  # 4. Kurulum dosyalarını hazırlayın (Bu aşamalar biraz sürebilir)
+  737  ../autogen.sh
+  738  # 5. Konfigürasyonu yapın (Tek satırda kopyaladığınızdan emin olun)
+  739  ../configure --with-x --enable-xspice --disable-debug --enable-cider --with-readline=yes --enable-openmp --enable-adms
+  740  # 6. Kodu derleyin
+  741  make
+  742  # 7. Sisteme kurun
+  743  sudo make install
+  744  # 8. Ana dizine geri dönün
+  745  cd ../..
+  746  git clone https://git.code.sf.net/p/ngspice/ngspice
+  747  git clone https://git.code.sf.net/p/ngspice/ngspice_git
+  748  git clone https://git.code.sf.net/p/ngspice/ngspice ngspice_git
+  749  cd
+  750  git clone https://git.code.sf.net/p/ngspice/ngspice ngspice_git
+  751  cd Desktop/
+  752  cd chip_design/
+  753  sudo apt-get update
+  754  sudo apt-get install git
+  755  sudo apt install python3-pip python3-yaml -y
+  756  export PATH="$HOME/.local/bin:$PATH"
+  757  # Çalışma dizininin oluşturulması
+  758  cd Desktop/
+  759  mkdir -p chip_design
+  760  cd chip_design/
+  761  # Gerekli kütüphanelerin kurulması
+  762  sudo apt-get install build-essential clang bison flex -y
+  763  sudo apt-get install libreadline-dev gawk tcl-dev libffi-dev -y
+  764  sudo apt-get install git graphviz xdot pkg-config python3 -y
+  765  sudo apt-get install libboost-system-dev libboost-python-dev libboost-filesystem-dev zlib1g-dev make m4 -y
+  766  history
+  767  sudo apt-get install tcsh csh libx11-dev gperf tcl8.6-dev tk8.6 -y
+  768  sudo apt-get install tcsx
+  769  sudo apt-get install tk8.6-dev libxmp4 libxpm-dov libxcb1 -y
+  770  sudo apt-get install tk8.6-dev libxmp4 libxpm-dev libxcb1 -y
+  771  sudo apt-get install libcairo2 libxrender-dev libx11-xcb-dev -y
+  772  sudo apt-get install libxaw7-dev freeglut3-dev automake yosys -y
+  773  sudo atp-get update
+  774  sudo apt-get update
+  775  sudo apt-get -y install libtool
+  776  git clone https://github.com/StefanSchippers/xschem.gut xschem
+  777  ls
+  778  rm -rf xschem/
+  779  git clone https://github.com/StefanSchippers/xschem.gut xschem
+  780  git clone https://github.com/StefanSchippers/xschem.git xschem
+  781  cd xschem/
+  782  ./configure
+  783  make
+  784  sudo make install
+  785  ls
+  786  cd ..
+  787  xschem
+  788  ls
+  789  clear
+  790  rm -rf magic/
+  791  git clone git://opencircuitdesign.com/magic
+  792  cd magic/
+  793  ./configure
+  794  make
+  795  sudo make install
+  796  magic
+  797  cd
+  798  cd Desktop/chip_design/
+  799  sudo apt-get update
+  800  git clone https://git.code.sf.net/p/ngspice/ngspice ngspice-git
+  801  cd ngspice-git/
+  802  mkdir release
+  803  sudo apt-get install adms -y
+  804  cd release/
+  805  cd..
+  806  cd ..
+  807  ./autogen.sh
+  808  cd release/
+  809  ../configure --with-x enable-xspice --disable-debug --enable-cider --with-read line=yes --enable-openmp --enable-adms
+  810  ../configure --with-x --enable-xspice --disable-debug --enable-cider --with-read line=yes --enable-openmp --enable-adms
+  811  make
+  812  sudo make install
+  813  sudo apt-get install netgen-lvs -y
+  814  cd
+  815  cd Desktop/chip_design/
+  816  sudo apt-get update
+  817  sudo apt -y install yosys -y
+  818  git clone git://opencircuitdesign.com/open-pdks
+  819  git clone git://opencircuitdesign.com/open_pdks
+  820  cd open_pdks/
+  821  ./configure --enable-sky130-pdk
+  822  sudo make
+  823  sudo make install
+  824  xschem
+  825  magic
+  826  sudo apt -y install vim-gtk3 xterm -y
+  827  cd ..
+  828  sudo apt install docker.io
+  829  docker run hello-world
+  830  cd /var/run
+  831  sudo su
+  832  docker run hello-world
+  833  cd
+  834  cd Desktop/
+  835  cd chip_design/
+  836  git clone https://github.com/The-OpenROAD-Project/OpenLane
+  837  cd OpenLane/
+  838  make
+  839  sudo apt install python3.13-venv
+  840  make
+  841  make test
+  842  cd ..
+  843  sudo apt install iverilog
+  844  sudo apt-get update
+  845  sudo apt-get install klayout
+  846  klayount
+  847  klayout
+  848  history

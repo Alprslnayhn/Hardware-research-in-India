@@ -1,0 +1,615 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=2.5cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{titling}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+\graphicspath{{figs/}}
+
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{VLSI Design and Simulation Internship Report}
+\lhead{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    showstringspaces=false
+}
+
+% ---------- Title Page Info ----------
+\title{\textbf{Design, Simulation, and Performance Analysis of \\
+CMOS Logic Gates and a 6T SRAM Cell \\
+Using the SkyWater Sky130 Open-Source PDK}}
+\author{
+    \textbf{Ahmet Alparslan Ayhan} \\
+    \textit{Electronics and Communication Engineering} \\
+    \textit{[Your University Name]}
+}
+\date{[Submission Date]}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{1.5cm}
+{\Huge \bfseries Design, Simulation, and Performance Analysis of CMOS Logic Gates and a 6T SRAM Cell Using the SkyWater Sky130 Open-Source PDK \par}
+\vspace{1.5cm}
+{\Large An Internship / VLSI Training Report \par}
+\vspace{1cm}
+{\large \textbf{Internship Duration:} 14 July 2026 -- 17 September 2026 \par}
+\vspace{1cm}
+{\large Submitted in partial fulfillment of the requirements of the \\
+\textbf{8-Week VLSI Design Training Programme} \\
+(Module 2: Circuit Design) \par}
+\vspace{2cm}
+{\large \textbf{Submitted by:} \\{} Ahmet Alparslan Ayhan \\{}  \par}
+\vspace{1cm}
+{\large \textbf{Under the Supervision of:} \\{} Dr. Abhay Bindle and Dr. Ashish Sachdeva \par}
+\vspace{1cm}
+{\large \textbf{Organized through:} AIESEC Global Talent / Global Volunteer Internship Programme \par}
+\vspace{2cm}
+{\large Department of Electrical and Electronics\\{} Maharishi Markandeshwar (Deemed to be University) \\{} September 2026  \par}
+\vfill
+\end{titlepage}
+
+\newpage
+\thispagestyle{empty}
+\vspace*{1cm}
+\begin{center}
+{\Large \bfseries DECLARATION}
+\end{center}
+\vspace{0.5cm}
+\noindent
+I AHMET ALPARSLAN AYHAN do hereby declare that the internship report submitted to the Maharishi Markandeshr (Deemed to be University) entitled Design, Simulation, and Performance Analysis of CMOS Logic Gates and a 6T SRAM Cell Using the SkyWater Sky130 Open-Source PDK under Department of Electronics and Communication Engineering, is an original piece of research work carried out by me under the guidance and supervision of Dr. Abhay Bindle and Dr. Ashish Sachdeva.
+
+\vspace{0.4cm}
+\noindent
+I further declare that the information has been collected from genuine \& authentic sources and I have not submitted this report to this or any other university.
+
+\vspace{1.5cm}
+\begin{flushright}
+\textbf{AHMET ALPARSLAN AYHAN}
+\end{flushright}
+
+\newpage
+
+\begin{center}
+{\Large \bfseries ACKNOWLEDGEMENT}
+\end{center}
+\vspace{0.5cm}
+\noindent
+I wish to express my heartfelt gratitude to the all the people who have played a crucial role in the research for this project, without their active cooperation the preparation of this project could not have been completed within the specified time limit.
+
+\vspace{0.3cm}
+\noindent
+I am thankful to respected head of ECE department, Dr. Aman Ganesh, for motivating me to complete this project with complete focus and attention. I am also thankful to my guides Dr. Abhay Bindle and Dr. Ashish Sachdeva who supported me throughout this project with utmost cooperation and patience and for helping me in doing this Project.
+
+\newpage
+
+\tableofcontents
+\newpage
+
+% =====================================================
+\section{Introduction}
+% =====================================================
+This report documents the work carried out during a two-month academic
+internship programme, undertaken through the AIESEC Global Volunteer
+platform, in the area of transistor-level (custom) VLSI circuit design.
+Following the introductory VHDL and digital-design modules of the training
+programme, the focus of the internship shifted to full-custom CMOS circuit
+design, simulation, and layout using the open-source SkyWater \texttt{Sky130A}
+Process Design Kit (PDK) together with the \texttt{Xschem} schematic
+capture tool, the \texttt{ngspice} circuit simulator, and the \texttt{Magic}
+VLSI layout editor.
+
+Under the guidance of the course instructor, the assigned tasks were
+extended beyond the standard exercises of the training schedule in order to
+obtain a more rigorous, quantitative characterisation of the designed
+circuits. In particular, in addition to functional verification, the
+propagation delay, average power dissipation, and Power--Delay Product
+(PDP) of a two-input NAND gate were extracted directly from transient
+SPICE simulations. This report consolidates the schematics, simulation
+waveforms, layout, hand calculations, and conclusions obtained during this
+work.
+
+% =====================================================
+\section{Objectives}
+% =====================================================
+The specific objectives of this work were:
+
+\begin{enumerate}[label=(\roman*)]
+    \item To design and simulate a CMOS inverter at the transistor level
+    using the Sky130A PDK, and to verify its functionality through
+    transient simulation.
+    \item To complete the physical layout of the CMOS inverter using the
+    \texttt{Magic} layout editor and verify it against design rules (DRC).
+    \item To design and simulate a two-input CMOS NAND gate, and to extract
+    its high-to-low and low-to-high propagation delays, average current,
+    average power dissipation, and Power--Delay Product (PDP) from
+    transient simulation using \texttt{.meas} statements in ngspice.
+    \item To realise a 2:1 multiplexer using only NAND gates (NAND-based
+    universal logic implementation) and verify its functional correctness
+    through simulation.
+    \item To design and simulate a standard 6-transistor (6T) SRAM cell,
+    and to verify correct read and write operation through transient
+    simulation of the word-line (WL) and bit-line (BL, BLB) signals.
+\end{enumerate}
+
+% =====================================================
+\section{Design and Simulation Environment}
+% =====================================================
+All circuits in this report were designed and verified using a fully
+open-source, Linux-based analog/mixed-signal design flow:
+
+\begin{itemize}
+    \item \textbf{Process Design Kit:} SkyWater \texttt{Sky130A} 130\,nm
+    open-source PDK.
+    \item \textbf{Schematic capture:} \texttt{Xschem}.
+    \item \textbf{Circuit simulation:} \texttt{ngspice}, using the
+    \texttt{tt} (typical-typical) process corner at $27\,^{\circ}\mathrm{C}$.
+    \item \textbf{Physical layout and DRC verification:} \texttt{Magic}
+    VLSI layout tool.
+    \item \textbf{Device models used:} \texttt{pfet\_01v8} and
+    \texttt{nfet\_01v8}, both sized with a width/length ratio of
+    $W/L = 1/0.15\ \mu\text{m}$ and a single finger ($nf = 1$), unless
+    otherwise stated.
+\end{itemize}
+
+% =====================================================
+\section{CMOS Inverter Design}
+% =====================================================
+
+\subsection{Circuit Description}
+The CMOS inverter was implemented using one PMOS transistor (M1,
+\texttt{pfet\_01v8}) connected between $V_{DD}$ and the output node, and
+one NMOS transistor (M2, \texttt{nfet\_01v8}) connected between the output
+node and ground, with both gates tied to the common input $A$, as shown in
+Fig.~\ref{fig:inv_schematic}. Both devices were sized with
+$W/L = 1\times1/0.15$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{trim_inv-2.png}
+    \caption{Transistor-level schematic of the CMOS inverter in Xschem
+    (PMOS M1 and NMOS M2, $W/L = 1/0.15$) together with the corresponding
+    transient simulation waveforms of the input ($A$) and output
+    ($V_{OUT}$) signals.}
+    \label{fig:inv_schematic}
+\end{figure}
+
+\subsection{Testbench and Transient Simulation}
+The inverter was instantiated in a top-level testbench (\texttt{inv\_test.sch})
+in which the input $A$ was driven by a pulse source
+(\texttt{PULSE(0 1.2 0 1n 1n 2u)}), with $V_{DD} = 1.8\,\text{V}$
+applied to the supply. A transient analysis (\texttt{.tran 1u 10u}) was
+performed using the \texttt{tt} process corner. The resulting waveforms,
+shown in Fig.~\ref{fig:inv_wave}, confirm correct inverting behaviour: the
+output ($V_{OUT}$) switches to a logic HIGH whenever the input $A$ is
+LOW, and vice versa, with sharp, well-defined transitions.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{trim_inv-1.png}
+    \caption{Testbench schematic and transient simulation output of the
+    CMOS inverter: input waveform $A$ and output waveform $V_{OUT}$
+    plotted over a $10\,\mu\text{s}$ simulation window.}
+    \label{fig:inv_wave}
+\end{figure}
+
+\subsection{Physical Layout}
+Following functional verification at the schematic level, the physical
+layout of the CMOS inverter was completed in the \texttt{Magic} layout
+editor, targeting the \texttt{sky130A} technology, as shown in
+Fig.~\ref{fig:inv_layout}. The layout includes the diffusion, polysilicon
+gate, local interconnect, and contact layers for both the PMOS and NMOS
+devices, and was verified to be free of design-rule violations
+(\texttt{DRC = 0}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{trim_inv-3.png}
+    \caption{Physical layout of the CMOS inverter in \texttt{Magic},
+    \texttt{sky130A} technology, showing zero DRC violations.}
+    \label{fig:inv_layout}
+\end{figure}
+
+% =====================================================
+\section{CMOS Inverter Fundamentals: How It Works, Power, and Delay}
+\label{sec:cmos_theory}
+% =====================================================
+Before presenting the delay and power measurements of the NAND gate in
+Section~\ref{sec:nand}, this section explains, in simple terms, how a
+MOSFET transistor and a CMOS inverter work, and what is meant by
+``power'' and ``delay'' in a digital circuit. Since the inverter is the
+basic building block of every CMOS logic gate (including the NAND gate
+designed later in this report), the same ideas apply directly to the
+more complex gates discussed afterwards.
+
+\subsection{Basic Structure of a MOSFET}
+A MOSFET (Metal-Oxide-Semiconductor Field-Effect Transistor) can be
+thought of as an electrically controlled switch. It has four terminals:
+
+\begin{itemize}
+    \item \textbf{Source} and \textbf{Drain}: two heavily doped regions
+    through which current flows.
+    \item \textbf{Gate}: a metal (or polysilicon) electrode placed on top
+    of a thin insulating oxide layer. The voltage applied here controls
+    whether the switch is ON or OFF.
+    \item \textbf{Bulk (Substrate)}: the base silicon material on which
+    the transistor is built.
+\end{itemize}
+
+When a sufficiently large voltage is applied to the gate, it attracts
+charge carriers to the region directly beneath the oxide, forming a thin
+conducting path called the \textbf{channel}, which connects the source
+to the drain and allows current to flow. When the gate voltage is too
+low, no channel forms, and the transistor behaves like an open switch
+(no current flows). This same structure is visible in the physical
+layout of Fig.~\ref{fig:inv_layout}, where the diffusion regions (source
+and drain), the polysilicon gate, and the metal contacts can be
+identified as separate layers.
+
+There are two types of MOSFET used in CMOS design:
+\begin{itemize}
+    \item \textbf{NMOS transistor}: turns ON when the gate voltage is
+    HIGH, and turns OFF when the gate voltage is LOW.
+    \item \textbf{PMOS transistor}: behaves in the opposite way -- it
+    turns ON when the gate voltage is LOW, and turns OFF when the gate
+    voltage is HIGH.
+\end{itemize}
+
+Because NMOS and PMOS switch in opposite ways, combining one of each is
+what makes a CMOS (\emph{Complementary} MOS) circuit work.
+
+\subsection{How the CMOS Inverter Works}
+As shown earlier in Fig.~\ref{fig:inv_schematic}, the CMOS inverter
+consists of one PMOS transistor connected between the supply $V_{DD}$
+and the output, and one NMOS transistor connected between the output and
+ground, with both gates connected to the same input signal $A$. Because
+the two transistors always switch in opposite directions, exactly one of
+them is ON at a time:
+
+\begin{itemize}
+    \item When the input $A$ is \textbf{HIGH}: the NMOS transistor turns
+    ON and connects the output to ground, while the PMOS transistor turns
+    OFF. The output is pulled to \textbf{LOW}.
+    \item When the input $A$ is \textbf{LOW}: the PMOS transistor turns
+    ON and connects the output to $V_{DD}$, while the NMOS transistor
+    turns OFF. The output is pulled to \textbf{HIGH}.
+\end{itemize}
+
+This is exactly the inverting behaviour observed in the simulation
+waveforms of Fig.~\ref{fig:inv_wave}: whenever the input goes HIGH, the
+output goes LOW, and vice versa.
+
+\subsection{Power Dissipation: A Simple View}
+Every time the output of a logic gate switches, it must charge or
+discharge a small load capacitance $C_L$, formed mainly by the wiring
+and by the input capacitance of the following gate. This charging and
+discharging of $C_L$, occurring every time the circuit switches, is the
+main source of power consumption in a CMOS circuit, known as
+\textbf{dynamic power}:
+
+\begin{equation}
+    P_{\text{dyn}} \approx C_{L} \, V_{DD}^{2} \, f,
+    \label{eq:pdyn}
+\end{equation}
+
+where $V_{DD}$ is the supply voltage and $f$ is the switching frequency
+(how often the gate changes state per second). This equation simply
+says: the higher the supply voltage or the faster the circuit switches,
+the more power it consumes.
+
+Ideally, when the circuit is not switching, no current should flow at
+all, since exactly one of the two transistors is always OFF and blocks
+the path between $V_{DD}$ and ground. In a real transistor, a very small
+leakage current still flows even when the transistor is supposed to be
+OFF; this is called \textbf{static power}, and is normally much smaller
+than the dynamic power discussed above.
+
+\subsection{Propagation Delay: A Simple View}
+\textbf{Propagation delay} is simply the time it takes for the output to
+respond after the input changes. Because pulling the output down (through
+the NMOS) and pulling the output up (through the PMOS) do not necessarily
+happen at the same speed, two separate delays are usually measured:
+
+\begin{itemize}
+    \item $t_{pHL}$: the delay for the output to switch from HIGH to LOW.
+    \item $t_{pLH}$: the delay for the output to switch from LOW to HIGH.
+\end{itemize}
+
+The overall propagation delay of the gate is simply reported as the
+average of these two values:
+
+\begin{equation}
+    t_{p} = \frac{t_{pHL}+t_{pLH}}{2}.
+    \label{eq:tp}
+\end{equation}
+
+In silicon, electrons (which carry current in the NMOS transistor) move
+faster than holes (which carry current in the PMOS transistor). Because
+of this, $t_{pHL}$ and $t_{pLH}$ are usually not exactly equal, which is
+why both values were measured separately for the NAND gate in
+Table~\ref{tab:nand_results}.
+
+\subsection{Power--Delay Product (PDP)}
+A faster circuit generally consumes more power, and a lower-power circuit
+is generally slower. To compare designs fairly, both factors are combined
+into a single number called the \textbf{Power--Delay Product (PDP)}:
+
+\begin{equation}
+    \mathrm{PDP} = P_{avg}\times t_{p}.
+    \label{eq:pdp}
+\end{equation}
+
+The PDP represents the amount of energy consumed by the gate for a single
+switching event. A lower PDP means the gate is more energy-efficient,
+which is important in battery-powered and low-power digital systems.
+This is the metric used to evaluate the NAND gate designed in
+Section~\ref{sec:nand}.
+
+% =====================================================
+\section{Two-Input CMOS NAND Gate: Design and Performance Analysis}
+\label{sec:nand}
+% =====================================================
+
+\subsection{Circuit Description}
+The two-input NAND gate was implemented in the standard CMOS static
+fashion: two PMOS transistors (M1, M2) connected in parallel between
+$V_{DD}$ and the output node $Y$, and two NMOS transistors (M3, M4)
+connected in series between the output node and ground, with inputs
+$A$ and $B$ driving the corresponding gate pairs, as shown in
+Fig.~\ref{fig:nand_schematic}. All four devices were sized with
+$W/L = 1\times1/0.15$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{trim_nand-1.png}
+    \caption{Transistor-level schematic of the two-input static CMOS NAND
+    gate (parallel PMOS pull-up network M1--M2, series NMOS pull-down
+    network M3--M4) together with the \texttt{.meas} statements used to
+    extract propagation delay and average power.}
+    \label{fig:nand_schematic}
+\end{figure}
+
+\subsection{Functional Verification}
+The NAND gate was simulated with independent pulse sources on inputs $A$
+and $B$ (different periods, to exercise all four input combinations) and
+$V_{DD} = 1.8\,\text{V}$. The resulting output waveform $Y$, shown in
+Fig.~\ref{fig:nand_wave}, correctly follows the NAND truth table: the
+output is LOW only when both $A$ and $B$ are HIGH, and HIGH otherwise.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{trim_inv-6.png}
+    \caption{Transient simulation waveforms of the NAND gate: inputs $A$,
+    $B$ and output $Y$.}
+    \label{fig:nand_wave}
+\end{figure}
+
+\subsection{Propagation Delay and Power Measurement}
+To characterise the dynamic performance of the gate quantitatively, the
+following \texttt{.meas} statements were added to the ngspice transient
+analysis:
+
+\newpage
+
+\begin{lstlisting}
+.tran 0.1n 100n
+
+* Propagation Delay
+.meas tran delay_hl trig v(a) val=0.9 rise=1 targ v(y) val=0.9 fall=1
+.meas tran delay_lh trig v(a) val=0.9 fall=1 targ v(y) val=0.9 rise=1
+
+* Average Power
+.meas tran avg_current avg i(v1)
+.meas tran avg_power param='-1.8 * avg_current'
+\end{lstlisting}
+
+Here, \texttt{delay\_hl} and \texttt{delay\_lh} measure the
+high-to-low and low-to-high propagation delays of the output with
+respect to the switching of input $A$, while \texttt{avg\_current} and
+\texttt{avg\_power} respectively estimate the average supply current and
+average power dissipation over the simulation window, using the relation
+$P_{avg} = V_{DD}\cdot I_{avg}$.
+
+The ngspice measurement results are shown in Fig.~\ref{fig:nand_meas}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{trim_inv-7.png}
+    \caption{ngspice \texttt{.meas} output for the NAND gate transient
+    analysis, reporting \texttt{delay\_hl}, \texttt{delay\_lh},
+    \texttt{avg\_current}, and \texttt{avg\_power}.}
+    \label{fig:nand_meas}
+\end{figure}
+
+The extracted results were:
+
+\begin{table}[H]
+\centering
+\caption{Measured propagation delay and power of the two-input CMOS NAND gate.}
+\label{tab:nand_results}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Measured Value} \\
+\midrule
+High-to-Low Propagation Delay, $t_{pHL}$ & $\approx 21.4\ \text{ps}$ \\
+Low-to-High Propagation Delay, $t_{pLH}$ & $\approx 19.6\ \text{ps}$ \\
+Average Supply Current, $I_{avg}$          & $\approx -2.11\times10^{-7}\ \text{A}$ \\
+Average Power Dissipation, $P_{avg}$       & $\approx 3.90\times10^{-7}\ \text{W}\ (390\ \text{nW})$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Power--Delay Product (PDP) Calculation}
+The average propagation delay of the gate was computed as the arithmetic
+mean of the two measured transition delays:
+
+\begin{equation}
+t_{p} = \frac{t_{pHL} + t_{pLH}}{2} \approx \frac{21.4\ \text{ps} + 19.6\ \text{ps}}{2} \approx 20.5\ \text{--}\ 22.5\ \text{ps}
+\end{equation}
+
+The Power--Delay Product (PDP), which quantifies the energy consumed by
+the gate per switching event, was then computed as:
+
+\begin{equation}
+\mathrm{PDP} = P_{avg} \times t_{p}
+\end{equation}
+
+\begin{equation}
+\mathrm{PDP} \approx (3.90\times10^{-7}\ \text{W}) \times (2.05\times10^{-11}\ \text{s}) \approx 7.99\times10^{-18}\ \text{J}
+\end{equation}
+
+\textbf{Discussion.} In this calculation, the average of the $0 \rightarrow 1$
+and $1 \rightarrow 0$ transition delays was used because pulling the
+output down (through the NMOS pull-down network) and pulling it up
+(through the PMOS pull-up network) generally proceed at different rates,
+owing to the difference in carrier mobility between the two device types;
+averaging the two gives a single representative figure for the switching
+speed of the gate. The delay figure was then combined with the average
+power dissipation, rather than being reported alone, because the PDP is
+what actually reflects the \emph{energy} consumed by the gate per
+transition. A gate that switches very quickly but draws excessive
+current will still deplete a battery-powered system rapidly, while a
+gate with very low power but excessive delay will limit the maximum
+operating frequency of the system; the PDP therefore provides a single
+figure of merit that captures the trade-off between speed and energy
+efficiency, which is central to low-power digital circuit design.
+
+% =====================================================
+\section{2:1 Multiplexer Implementation Using NAND Gates}
+% =====================================================
+
+\subsection{Logic Realisation}
+As a demonstration of NAND-gate universality, a 2:1 multiplexer was
+constructed entirely from the two-input NAND gate designed in
+Section~4, following the standard four-NAND multiplexer topology. Two
+data inputs ($S0$, $S1$) are first combined with the select signal and
+its complement, and the two resulting product terms are combined in a
+final NAND stage to produce the multiplexer output $Y$:
+
+\begin{equation}
+Y = \overline{\overline{(A \cdot \overline{S})} \cdot \overline{(B \cdot S)}}
+  = A\cdot\overline{S} + B\cdot S
+\end{equation}
+
+The gate-level implementation, built by cascading five instances of the
+custom NAND cell, is shown in Fig.~\ref{fig:mux_schematic}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{trim_mux-4.png}
+    \caption{Gate-level schematic of the 2:1 multiplexer, built from five
+    instances of the custom CMOS NAND cell, together with the ngspice
+    node-voltage listing.}
+    \label{fig:mux_schematic}
+\end{figure}
+
+\subsection{Simulation Results}
+The multiplexer was verified by applying independent pulse waveforms to
+the data input $S0$ and the select line $S1$, and observing the output
+$Y$. As seen in Fig.~\ref{fig:mux_wave}, the output correctly tracks
+$S0$ when the select line is LOW, confirming correct multiplexing
+behaviour of the NAND-based implementation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{trim_mux-5.png}
+    \caption{Transient simulation waveforms of the NAND-based 2:1
+    multiplexer: output $Y$, select signal $S1$, and data input $S0$.}
+    \label{fig:mux_wave}
+\end{figure}
+
+% =====================================================
+\section{6T SRAM Cell Design}
+% =====================================================
+
+\subsection{Circuit Description}
+A standard 6-transistor (6T) SRAM cell was designed, consisting of a pair
+of cross-coupled CMOS inverters (forming the bistable storage element)
+together with two NMOS access transistors controlled by the word line
+(WL), which connect the internal storage nodes to the complementary bit
+lines BL and BLB, as shown in Fig.~\ref{fig:sram_schematic}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{trim_inv-5.png}
+    \caption{Transistor-level schematic of the 6T SRAM cell: cross-coupled
+    inverter pair with NMOS access transistors gated by the word line
+    (WL), connecting to bit lines BL and BLB.}
+    \label{fig:sram_schematic}
+\end{figure}
+
+\subsection{Testbench and Read/Write Simulation}
+The SRAM cell was instantiated in a testbench in which the word line WL
+and the two bit lines BL and BLB were driven by independent pulse
+sources with staggered timing, and $V_{DD} = 1.8\,\text{V}$ was applied
+to the supply, as shown in Fig.~\ref{fig:sram_tb}. A transient
+analysis (\texttt{.tran 0.1n 100n}) was carried out to verify correct
+write and retention behaviour of the cell.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\textwidth]{trim_inv-4.png}
+    \caption{6T SRAM testbench schematic (word-line and bit-line pulse
+    sources) and the resulting transient simulation waveforms of
+    $v(\mathrm{BL})$, $v(\mathrm{WL})$, and $v(\mathrm{BLB})$.}
+    \label{fig:sram_tb}
+\end{figure}
+
+The waveforms confirm that, while the word line WL is asserted, the
+internal storage nodes follow the values driven onto BL and BLB (write
+operation), and that BL and BLB remain complementary throughout the
+simulation, as expected for correctly functioning differential bit
+lines.
+
+% =====================================================
+\section{Conclusion}
+% =====================================================
+In this two-month internship, a complete full-custom CMOS design flow was
+exercised on the open-source SkyWater Sky130A PDK: a CMOS inverter was
+designed at both the schematic and physical-layout level; a two-input
+static CMOS NAND gate was designed and rigorously characterised in terms
+of propagation delay, average power, and Power--Delay Product; a 2:1
+multiplexer was implemented from NAND gates to demonstrate logical
+universality; and a 6T SRAM cell was designed and functionally verified
+through read/write transient simulation. The measured Power--Delay
+Product of the NAND gate, $\mathrm{PDP} \approx 7.99\times10^{-18}\ \text{J}$,
+illustrates the fundamental speed--power trade-off in CMOS digital
+design, and confirms that the designed gate achieves sub-picojoule
+switching energy consistent with the 130\,nm technology node used. This
+work extended the standard training exercises assigned in Module 2 of
+the training schedule (Weeks 5--8) by adding a quantitative,
+measurement-based performance analysis, and provided practical, hands-on
+experience with an industry-representative open-source VLSI design flow.
+
+\end{document}
